@@ -1,0 +1,22 @@
+{
+  "name": "ffgroupme-bot",
+  "version": "1.0.0",
+  "description": "A fantasy football groupme bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SwapnikKatkoori/ffgroupme-bot.git"
+  },
+  "author": "Swapnik Katkoori",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SwapnikKatkoori/ffgroupme-bot/issues"
+  },
+  "homepage": "https://github.com/SwapnikKatkoori/ffgroupme-bot#readme",
+  "dependencies": {
+    "puppeteer": "^1.17.0"
+  }
+}
