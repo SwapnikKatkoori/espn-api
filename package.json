@@ -18,5 +18,8 @@
   "homepage": "https://github.com/SwapnikKatkoori/ffgroupme-bot#readme",
   "dependencies": {
     "puppeteer": "^1.17.0"
+  },
+  "devDependencies": {
+    "jest": "^24.8.0"
   }
 }

@@ -1,12 +1,20 @@
 const puppeteer = require('puppeteer')
 
 class Api{
+
 	constructor(email, password, leagueId, seasonId){
 		this.email = email
 		this.password = password
 		this.leagueId = leagueId
 		this.seasonId = seasonId
 		this.browser = puppeteer.launch({headless:false});
+	}
+
+	async goToNewPage(url){
+		const browser = await this.browser;
+		const page = await browser.newPage();
+		await page.goto(url);
+		return page;
 	}
 
 	async login(){
@@ -33,20 +41,31 @@ class Api{
 		return
 	}
 
+
 	async getStandings(){
-		const browser = await this.browser;
-		const page = await browser.newPage();
-		await page.goto(`http://fantasy.espn.com/football/league/standings?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
+		const page = await this.goToNewPage(`http://fantasy.espn.com/football/league/standings?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
+
+		/*
+		-selects the standings table and gets the standings as a list of strings.
+		*/
 		await page.waitForSelector(".Table2__tbody");
+		var table = null
 		const list_of_names = await page.evaluate(()=>{
 			list_of_names = []
-			var table = document.getElementsByClassName('Table2__tbody');
+			table = document.getElementsByClassName('Table2__tbody');
 			for(var i = 0; i<table[0].children.length; i++){
 				list_of_names.push(table[0].children[i].textContent);
 			}
 			return list_of_names;
 		})
 
+
+		/*
+		-Cleans the list of names and makes then readable
+		-Makes a map of the standings
+		-Makes a list of strings of the standings
+		-The format was changed for the 2019 season and might change again
+		*/
 		standings_list = [];
 		standings_map = new Map();
 		var count = 1
@@ -84,11 +103,36 @@ class Api{
 			count += 1;
 
 		}
+
 		standings = {
 			standings_list: standings_list,
 			standings_map: standings_map
 		}
 		return standings
+	}
+
+	/*
+	-Scrapes the espn score board page to get head to head scores.
+	-Returns an object of the format:
+		{
+			1:  {
+					homeTeam:
+					{
+						teamName: {},
+						score: {}
+					},
+					awayTeam:{
+						teamName: {},
+						score: {}
+					}
+				}
+			2:  ...
+		}
+	*/
+	async getScores(){
+		page = await this.goToNewPage(`http://fantasy.espn.com/football/league/scoreboard?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
+
+
 	}
 
 	async closeBrowser(){
