@@ -22,10 +22,7 @@ class Api{
 		-WARNING: Highly susceptable to change if espn decides to change how their website is formatted.
 	*/
 	async login(){
-		const browser = await this.browser;
-		const page = await browser.newPage();
-
-		await page.goto('http://www.espn.com/login')
+		const page = await this.goToNewPage('http://www.espn.com/login');
 		await page.waitForSelector("iframe");
 
 		const elementHandle = await page.$('div#disneyid-wrapper iframe');
@@ -47,7 +44,7 @@ class Api{
 
 
 	async getStandings(){
-		const page = await this.goToNewPage(`http://fantasy.espn.com/football/league/standings?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
+		const page = await this.goToNewPage(`http:// fantasy.espn.com/football/league/standings?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
 
 		/*
 		-selects the standings table and gets the standings as a list of strings.
@@ -124,28 +121,30 @@ class Api{
 	/*
 	-Scrapes the espn score board page to get head to head scores.
 	-Returns an object of the format:
-		{
-			1:  {
-					homeTeam:
-					{
-						teamName: String,
-						score: Int
-					},
-					awayTeam:{
-						teamName: String,
-						score: Int
-					}
+	{
+
+		scoresAsList: [["team_name", "score"],...]
+
+
+		scoreboards:{
+			0:  {
+					home:["team_name", "score"],
+					away:["team_name", "score"]
 				}
-			2:  ...
+			1:  ...
 		}
+	}
+	TODO:
 	-Selectors could be improved...
+	-
 	*/
 	async getScores(){
 		var page = await this.goToNewPage(`http://fantasy.espn.com/football/league/scoreboard?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
 		await page.waitForSelector('.ScoreCell_Score--scoreboard');
 		await page.waitForSelector('.ScoreCell__TeamName');
 
-		const scoreboards = await page.evaluate(()=>{
+		//scoreboardsList is in the format [["Team Name", "Score"], ["Team Name", "Score"]...]
+		const scoresAsList = await page.evaluate(()=>{
 			var scoreboardsAsList = [];
 			const teamNames = document.getElementsByClassName('ScoreCell__TeamName');
 			const scores = document.getElementsByClassName('ScoreCell_Score--scoreboard');
@@ -157,8 +156,23 @@ class Api{
 		 	}
 		 	return scoreboardsAsList;
 
-		})
-		return scoreboards;
+		});
+
+		//Takes the scoreboardsList and turns it into the format specified in the function description.
+		var scoreboards= {};
+		var i = 0;
+		var gameNo = 0;
+		while(i<scoresAsList.length){
+			scoreboards[gameNo] = { home: scoresAsList[i], away: scoresAsList[i+1]};
+			gameNo++;
+			i+=2;
+		}
+
+		const scoreboardsObject = {
+			scoresAsList: scoresAsList,
+			scoreboards: scoreboards
+		}
+		return scoreboardsObject;
 
 	}
 
