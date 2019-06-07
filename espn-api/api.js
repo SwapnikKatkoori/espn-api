@@ -17,6 +17,10 @@ class Api{
 		return page;
 	}
 
+	/*
+		-Logs into espn if a username and password is given.
+		-WARNING: Highly susceptable to change if espn decides to change how their website is formatted.
+	*/
 	async login(){
 		const browser = await this.browser;
 		const page = await browser.newPage();
@@ -47,11 +51,13 @@ class Api{
 
 		/*
 		-selects the standings table and gets the standings as a list of strings.
+		-in a weird format that is hard to read. Cleaned in the next part of the code.
+		--WARNING: The format was changed for the 2019 season and might change again.
 		*/
 		await page.waitForSelector(".Table2__tbody");
 		var table = null
 		const list_of_names = await page.evaluate(()=>{
-			list_of_names = []
+			var list_of_names = []
 			table = document.getElementsByClassName('Table2__tbody');
 			for(var i = 0; i<table[0].children.length; i++){
 				list_of_names.push(table[0].children[i].textContent);
@@ -59,17 +65,21 @@ class Api{
 			return list_of_names;
 		})
 
+		var standingsObject = this.cleanListOfNames(list_of_names);
+		
+		return standingsObject;	
+	}
 
-		/*
+	/*
 		-Cleans the list of names and makes then readable
 		-Makes a map of the standings
 		-Makes a list of strings of the standings
-		-The format was changed for the 2019 season and might change again
-		*/
-		standings_list = [];
-		standings_map = new Map();
+	*/
+	cleanListOfNames(list_of_names){
+		var standings_list = [];
+		var standings_map = new Map();
 		var count = 1
-		for(name of list_of_names){
+		for(var name of list_of_names){
 			const index = name.indexOf('.');
 			if (count >= 10){
 				var rank = name.slice(0,2);
@@ -104,11 +114,11 @@ class Api{
 
 		}
 
-		standings = {
+		const standings = {
 			standings_list: standings_list,
 			standings_map: standings_map
 		}
-		return standings
+		return standings;
 	}
 
 	/*
@@ -118,20 +128,37 @@ class Api{
 			1:  {
 					homeTeam:
 					{
-						teamName: {},
-						score: {}
+						teamName: String,
+						score: Int
 					},
 					awayTeam:{
-						teamName: {},
-						score: {}
+						teamName: String,
+						score: Int
 					}
 				}
 			2:  ...
 		}
+	-Selectors could be improved...
 	*/
 	async getScores(){
-		page = await this.goToNewPage(`http://fantasy.espn.com/football/league/scoreboard?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
+		var page = await this.goToNewPage(`http://fantasy.espn.com/football/league/scoreboard?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
+		await page.waitForSelector('.ScoreCell_Score--scoreboard');
+		await page.waitForSelector('.ScoreCell__TeamName');
 
+		const scoreboards = await page.evaluate(()=>{
+			var scoreboardsAsList = [];
+			const teamNames = document.getElementsByClassName('ScoreCell__TeamName');
+			const scores = document.getElementsByClassName('ScoreCell_Score--scoreboard');
+			for ( let i = 0; i < teamNames.length; i++ ){
+				var teamAndScore = [];
+		 		teamAndScore.push(teamNames[i].textContent);
+		 		teamAndScore.push(scores[i].textContent);
+		 		scoreboardsAsList.push(teamAndScore);
+		 	}
+		 	return scoreboardsAsList;
+
+		})
+		return scoreboards;
 
 	}
 
