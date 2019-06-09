@@ -12,12 +12,13 @@ An unofficial espn "api" for Node.js that gets data by scraping the espn ff page
 
 ### getting information
 ```
-const api = new espn_api("username", "password", "league_ID");
+const espnApi = require("espn-api").espnApi;
+const api = new espnApi("username", "password", "462787");
 (async()=>{
-	await api.login(); 
-	cosnt standing = await api.getStandings(); 
-	const scores = await api.getScores();
-	const await api.closeBrowser();
+        await api.login();
+        const standing = await api.getStandings();
+        const scores = await api.getScores();
+        await api.closeBrowser();
 })()
 ```
 
