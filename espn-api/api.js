@@ -7,7 +7,7 @@ class Api{
 		this.password = password
 		this.leagueId = leagueId
 		this.seasonId = seasonId
-		this.browser = puppeteer.launch({headless:false});
+		this.browser = puppeteer.launch({headless:true});
 	}
 
 	async goToNewPage(url){
@@ -25,24 +25,31 @@ class Api{
 		const page = await this.goToNewPage('http://www.espn.com/login');
 		await page.waitForSelector("iframe");
 
+		//Gets the iframe for the login page
 		const elementHandle = await page.$('div#disneyid-wrapper iframe');
 		const frame = await elementHandle.contentFrame();
 
+		//Selects the username field and types the username 
 		await frame.waitForSelector('[ng-model="vm.username"]', {visible: true})
 		const username = await frame.$('[ng-model="vm.username"]');
 		await username.type(this.email);
 
+		//Selects the password field and tyes the password
 		await frame.waitForSelector('[ng-model="vm.password"]', {visible: true})
 		const password = await frame.$('[ng-model="vm.password"]');
 		await password.type(this.password);
 
+		//Selects the log in button and clicks it
 		await frame.waitForSelector('[aria-label="Log In"]', {visible: true})
 		const loginButton = await frame.$('[aria-label="Log In"]');
 		await loginButton.click();
 		return
 	}
 
-
+	/*
+	TODO:
+	-Selectors need to be improved...
+	*/
 	async getStandings(){
 		const page = await this.goToNewPage(`http:// fantasy.espn.com/football/league/standings?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
 
@@ -135,19 +142,22 @@ class Api{
 		}
 	}
 	TODO:
-	-Selectors could be improved...
-	-
+	-Selectors need to be improved...
 	*/
 	async getScores(){
 		var page = await this.goToNewPage(`http://fantasy.espn.com/football/league/scoreboard?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
-		await page.waitForSelector('.ScoreCell_Score--scoreboard');
-		await page.waitForSelector('.ScoreCell__TeamName');
+
+		const scoreCellDivs = "ScoreCell_Score--scoreboard";
+		const teamNameDivs = "ScoreCell__TeamName";
+		
+		await page.waitForSelector(`.${scoreCellDivs}`);
+		await page.waitForSelector(`.${teamNameDivs}`);
 
 		//scoreboardsList is in the format [["Team Name", "Score"], ["Team Name", "Score"]...]
 		const scoresAsList = await page.evaluate(()=>{
 			var scoreboardsAsList = [];
-			const teamNames = document.getElementsByClassName('ScoreCell__TeamName');
-			const scores = document.getElementsByClassName('ScoreCell_Score--scoreboard');
+			const teamNames = document.getElementsByClassName(`${teamNameDivs}`);
+			const scores = document.getElementsByClassName(`${scoreCellDivs}`);
 			for ( let i = 0; i < teamNames.length; i++ ){
 				var teamAndScore = [];
 		 		teamAndScore.push(teamNames[i].textContent);
@@ -173,6 +183,10 @@ class Api{
 			scoreboards: scoreboards
 		}
 		return scoreboardsObject;
+
+	}
+
+	async getLineups(){
 
 	}
 
