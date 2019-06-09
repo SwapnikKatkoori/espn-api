@@ -23,11 +23,11 @@ const api = new espn_api("username", "password", "league_ID");
 
 # Method Details
 
-## login()
+### login()
 
 login() will login to espn leagues using the username and password that is passed in when the espn_api is initialized. Might be needed when getting private league data.
 
-## getStandings()
+### getStandings()
 
 getStandings() returns a Promise of an object of the format:
 
