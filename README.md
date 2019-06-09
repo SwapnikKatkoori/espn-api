@@ -1,5 +1,5 @@
 # espn-api
-An unofficial espn-api that gets data by scraping the espn ff page.
+An unofficial espn "api" for Node.js that gets data by scraping the espn ff page. 
 
 
 # Install
@@ -64,5 +64,11 @@ getScores() will return a Promise of an object of the format:
  }
 ```
 
+## closeBrowser()
+Closes the browser instance.
+
 # Motivation
-I wanted to get access to my fantasy footabll league data 
+I wanted to get access to my fantasy football league data so I could create a bot for our groupchat. 
+
+# Contibuting
+This unofficial api still needs a lot of work, so any pull requests are appreciated. Issue #1 will have a to do list on things that need to be added or improved. There will probaby also need to be a lot of maintanance since this relies on webbscraping and any change in the html could cause a function to break.
