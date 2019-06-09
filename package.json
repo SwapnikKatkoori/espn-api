@@ -1,6 +1,6 @@
 {
-  "name": "ffgroupme-bot",
-  "version": "1.0.0",
+  "name": "espn-api",
+  "version": "1.0.1",
   "description": "A fantasy football groupme bot",
   "main": "index.js",
   "scripts": {
