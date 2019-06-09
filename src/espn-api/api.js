@@ -2,12 +2,11 @@ const puppeteer = require('puppeteer')
 
 class Api{
 
-	constructor(email, password, leagueId, seasonId){
+	constructor(email, password, leagueId){
 		this.email = email
 		this.password = password
 		this.leagueId = leagueId
-		this.seasonId = seasonId
-		this.browser = puppeteer.launch({headless:true});
+		this.browser = puppeteer.launch({headless:false});
 	}
 
 	async goToNewPage(url){
@@ -43,7 +42,7 @@ class Api{
 		await frame.waitForSelector('[aria-label="Log In"]', {visible: true})
 		const loginButton = await frame.$('[aria-label="Log In"]');
 		await loginButton.click();
-		return
+		return true;
 	}
 
 	/*
@@ -51,7 +50,7 @@ class Api{
 	-Selectors need to be improved...
 	*/
 	async getStandings(){
-		const page = await this.goToNewPage(`http:// fantasy.espn.com/football/league/standings?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
+		const page = await this.goToNewPage(`http://fantasy.espn.com/football/league/standings?leagueId=${this.leagueId}&seasonId=2019`);
 
 		/*
 		-selects the standings table and gets the standings as a list of strings.
@@ -145,7 +144,7 @@ class Api{
 	-Selectors need to be improved...
 	*/
 	async getScores(){
-		var page = await this.goToNewPage(`http://fantasy.espn.com/football/league/scoreboard?leagueId=${this.leagueId}&seasonId=${this.seasonId}`);
+		var page = await this.goToNewPage(`http://fantasy.espn.com/football/league/scoreboard?leagueId=${this.leagueId}&seasonId=2019`);
 
 		const scoreCellDivs = "ScoreCell_Score--scoreboard";
 		const teamNameDivs = "ScoreCell__TeamName";
@@ -155,6 +154,8 @@ class Api{
 
 		//scoreboardsList is in the format [["Team Name", "Score"], ["Team Name", "Score"]...]
 		const scoresAsList = await page.evaluate(()=>{
+			const scoreCellDivs = "ScoreCell_Score--scoreboard";
+			const teamNameDivs = "ScoreCell__TeamName";
 			var scoreboardsAsList = [];
 			const teamNames = document.getElementsByClassName(`${teamNameDivs}`);
 			const scores = document.getElementsByClassName(`${scoreCellDivs}`);
@@ -187,12 +188,16 @@ class Api{
 	}
 
 	async getLineups(){
-
+		const page = await this.goToNewPage('http://fantasy.espn.com/football/league/scoreboard?leagueId=462787');
+		const buttonList = await page.waitForSelector('.btn--alt');
+		
+		console.log(await buttonList.children.textContent);
 	}
 
 	async closeBrowser(){
 		const browser = await this.browser;
-		browser.close();
+		await browser.close();
+		return true;
 	}
 }
 module.exports = Api;
