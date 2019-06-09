@@ -7,10 +7,10 @@ An unofficial espn "api" for Node.js that gets data by scraping the espn ff page
 
 # Usage
 
-## require
+### require
 ```const espn_api = require("espn-api"); ```
 
-## getting information
+### getting information
 ```
 const api = new espn_api("username", "password", "league_ID");
 (async()=>{
@@ -47,7 +47,7 @@ getStandings() returns a Promise of an object of the format:
 
 ```
 
-## getScores()
+### getScores()
 
 getScores() will return a Promise of an object of the format:
 ```
@@ -64,7 +64,7 @@ getScores() will return a Promise of an object of the format:
  }
 ```
 
-## closeBrowser()
+### closeBrowser()
 Closes the browser instance.
 
 # Motivation
