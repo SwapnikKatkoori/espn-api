@@ -68,8 +68,6 @@ getScores() will return a Promise of an object of the format:
 ### closeBrowser()
 Closes the browser instance.
 
-# Motivation
-I wanted to get access to my fantasy football league data so I could create a bot for our groupchat. 
 
 # Contibuting
 This unofficial api still needs a lot of work, so any pull requests are appreciated. Issue #1 will have a to do list on things that need to be added or improved. Feel free to add any feature requests to the issue. There will probaby also need to be a lot of maintanance since this relies on webbscraping and any change in the html could cause a function to break.
