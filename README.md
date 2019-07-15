@@ -1,5 +1,5 @@
 # espn-api
-An unofficial espn "api" for Node.js that gets data by scraping the espn ff page. 
+An unofficial espn "api" attempt for Node.js that gets data by scraping the espn ff page. Its not really usable at this point especially since the ESPN fantasy football website is always changing. Feel free to use any of the code in this if you are attempting to make your own web scraper for ESPN.
 
 
 # Install
